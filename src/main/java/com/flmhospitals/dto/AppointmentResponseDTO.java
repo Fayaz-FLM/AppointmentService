@@ -15,7 +15,11 @@ public class AppointmentResponseDTO {
 	
     private String appointmentId;
     
+    private String patientId;
+    
     private String patientName;
+    
+    private String doctorId;
     
     private String doctorName;
     
@@ -28,5 +32,19 @@ public class AppointmentResponseDTO {
     private String status;
     
     private String notes;
+    
+    private String reasonForVisit;
+    
+    private String diagnosisSummary;
+    
+    private String prescription;
+    
+    private String medicines;
+    
+    private String notesForReceptionist;
+    
+    private String followUpSuggestion;
+    
+    private String dietPlan;
 }
 

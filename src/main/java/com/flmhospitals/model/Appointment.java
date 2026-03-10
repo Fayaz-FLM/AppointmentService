@@ -41,6 +41,8 @@ public class Appointment {
 
 	private String notes;
 
+	private String reasonForVisit;
+
 	public Appointment(String patientId, String doctorId, LocalDate appointmentDate, LocalTime startTime, LocalTime endTime,
 
 			String status, String notes) {
