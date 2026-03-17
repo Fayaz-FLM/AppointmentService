@@ -5,10 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.flmhospitals.config.FeignClientConfig;
 import com.flmhospitals.dto.PatientResponseDto;
 
-@FeignClient(name = "PatientManagement", configuration = FeignClientConfig.class)
+@FeignClient(name = "PatientManagement")
 public interface PatientClient {
 
 	@GetMapping("/patients/getPatientName/{patientId}")

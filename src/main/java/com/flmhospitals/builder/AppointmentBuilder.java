@@ -18,8 +18,6 @@ public class AppointmentBuilder {
 					.reasonForVisit(appointmentRequestDTO.getReasonForVisit())
 					.build();
 		
-		
-		
 	}
 
 }
