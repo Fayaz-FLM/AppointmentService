@@ -4,11 +4,13 @@ import com.flmhospitals.model.Appointment;
 import com.flmhospitals.model.Diagnosis;
 import com.flmhospitals.service.AiDietPlanService;
 import com.flmhospitals.clients.DoctorClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AiDietPlanServiceImpl implements AiDietPlanService {
 
     private final ChatModel chatModel;
@@ -22,7 +24,12 @@ public class AiDietPlanServiceImpl implements AiDietPlanService {
     @Override
     public String generateDietPlan(Appointment appointment, Diagnosis diagnosis) {
 
-        String specialization = doctorClient.getSpecialization(appointment.getDoctorId());
+        String specialization = null;
+        try {
+            specialization = doctorClient.getSpecialization(appointment.getDoctorId());
+        } catch (Exception e) {
+            log.warn("Failed to fetch doctor specialization: {}", e.getMessage());
+        }
         String role = formatRole(specialization);
 
         String promptText = String.format(

@@ -131,22 +131,50 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	public List<AppointmentResponseDTO> getAllAppointmentsForAllDoctors(LocalDate date) {
 		List<Appointment> appointments = appointmentRepository.findByAppointmentDate(date);
-		return appointments.stream().map(appointment -> getAppointmentDetails(appointment.getAppointmentId())).toList();
+		return buildResponseList(appointments);
 	}
 
 	@Override
 	public List<AppointmentResponseDTO> getAllAppointmentsOfDoctor(String doctorId, LocalDate date) {
 		List<Appointment> appointments = appointmentRepository.findByDoctorIdAndAppointmentDate(doctorId, date);
-		return appointments.stream().map(appointment -> getAppointmentDetails(appointment.getAppointmentId())).toList();
+		return buildResponseList(appointments);
 	}
-	
+
 	@Override
 	public List<AppointmentResponseDTO> getAllFutureAppointmentsOfDoctor(String doctorId) {
 		List<Appointment> appointments = appointmentRepository.findByDoctorId(doctorId)
 											.stream()
 											.filter(appointment -> appointment.getAppointmentDate().isAfter(LocalDate.now()))
 											.toList();
-		return appointments.stream().map(appointment -> getAppointmentDetails(appointment.getAppointmentId())).toList();
+		return buildResponseList(appointments);
+	}
+
+	/**
+	 * Builds response DTOs for a list of appointments, caching doctor/patient name
+	 * lookups to avoid N+1 Feign calls.
+	 */
+	private List<AppointmentResponseDTO> buildResponseList(List<Appointment> appointments) {
+		java.util.Map<String, String> doctorNameCache = new java.util.HashMap<>();
+		java.util.Map<String, String> patientNameCache = new java.util.HashMap<>();
+
+		return appointments.stream().map(appointment -> {
+			Diagnosis diagnosis = diagnosisRepository.findByAppointmentId(appointment.getAppointmentId()).orElse(null);
+			AppointmentResponseDTO dto = AppointmentDTOBuilder.buildAppointmentResponseDTO(appointment, diagnosis);
+
+			String doctorName = doctorNameCache.computeIfAbsent(appointment.getDoctorId(), id -> {
+				try { return doctorClient.getDoctorName(id); }
+				catch (Exception e) { log.warn("Failed to fetch doctor name for {}: {}", id, e.getMessage()); return null; }
+			});
+			if (doctorName != null) dto.setDoctorName(doctorName);
+
+			String patientName = patientNameCache.computeIfAbsent(appointment.getPatientId(), id -> {
+				try { return patientClient.getPatientName(id); }
+				catch (Exception e) { log.warn("Failed to fetch patient name for {}: {}", id, e.getMessage()); return null; }
+			});
+			if (patientName != null) dto.setPatientName(patientName);
+
+			return dto;
+		}).toList();
 	}
 	
 	@Override
