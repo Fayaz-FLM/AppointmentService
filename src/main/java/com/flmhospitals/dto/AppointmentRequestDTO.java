@@ -25,6 +25,8 @@ public class AppointmentRequestDTO {
 	
 	private String notes;
 	
+	private String reasonForVisit;
+	
 
 
 }

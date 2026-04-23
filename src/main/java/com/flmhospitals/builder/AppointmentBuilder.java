@@ -15,9 +15,8 @@ public class AppointmentBuilder {
 					.startTime(appointmentRequestDTO.getStartTime())
 					.endTime(appointmentRequestDTO.getEndTime())
 					.notes(appointmentRequestDTO.getNotes())
+					.reasonForVisit(appointmentRequestDTO.getReasonForVisit())
 					.build();
-		
-		
 		
 	}
 

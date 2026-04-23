@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.flmhospitals.dto.PatientResponseDto;
 
-@FeignClient("PatientManagement")
+@FeignClient(name = "PatientManagement")
 public interface PatientClient {
 
 	@GetMapping("/patients/getPatientName/{patientId}")
